@@ -1,0 +1,17 @@
+{
+  "name": "bbsd_bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bbsd_bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@keyv/mongo": "^1.1.0",
+    "csv-parser": "^2.2.0",
+    "eslint": "^5.16.0",
+    "keyv": "^3.1.0"
+  }
+}
