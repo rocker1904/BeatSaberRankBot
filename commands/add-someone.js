@@ -12,7 +12,6 @@ module.exports = {
 	staffOnly: true,
 	async execute(message, args) {
 
-		const user = message.mentions.users.first().id;
 		let scoresaber = args[0];
 
 		// Reject command if arg doesn't contain /u/ and remove anything before it
@@ -30,17 +29,38 @@ module.exports = {
 			scoresaber = scoresaber.slice(0, endOfId);
 		}
 
+		let userId;
+
+		// If no user mentioned
+		if (!message.mentions.users.size) {
+			userId = args[1];
+			console.log(userId);
+			console.log(message.guild.members);
+			console.log(message.guild.members.hasOwnProperty(userId));
+			console.log(message.guild.members.hasOwnProperty('311273905094656001'));
+			try {
+				await message.guild.fetchMember(userId);
+			} catch(err) {
+				message.channel.send('Invalid user id.');
+				return;
+			}
+
+		// If user mentioned
+		} else {
+			userId = message.mentions.users.first().id;
+		}
+
 		// If neither the discord user or scoresaber profile is already in the database, add user
 		const lookup1 = await db1.get(scoresaber).catch(err => {
 			console.log(err);
 		});
-		const lookup2 = await db2.get(user).catch(err => {
+		const lookup2 = await db2.get(userId).catch(err => {
 			console.log(err);
 		});
 		if (lookup1 === undefined) {
 			if (lookup2 === undefined) {
-				db1.set(scoresaber, user).then(() => {
-					db2.set(user, scoresaber).then(() => {
+				db1.set(scoresaber, userId).then(() => {
+					db2.set(userId, scoresaber).then(() => {
 						message.channel.send('Added user.');
 					}).catch(err => {
 						console.log(err);
