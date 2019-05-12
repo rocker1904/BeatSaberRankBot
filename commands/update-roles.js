@@ -10,7 +10,7 @@ module.exports = {
 	description: 'Updates rank roles.',
 	args: false,
 	guildOnly: true,
-	cooldown: 3600,
+	staffOnly: true,
 	async execute(message) {
 		message.channel.send('Getting roles...');
 		console.log('Getting ranks...');
