@@ -11,7 +11,7 @@ module.exports = {
 	usage: '<scoresaber profile>',
 	async execute(message, args) {
 
-		const user = message.author.id;
+		const userId = message.author.id;
 		let scoresaber = args[0];
 
 		// Reject command if arg doesn't contain /u/ and remove anything before it
@@ -33,13 +33,13 @@ module.exports = {
 		const lookup1 = await db1.get(scoresaber).catch(err => {
 			console.log(err);
 		});
-		const lookup2 = await db2.get(user).catch(err => {
+		const lookup2 = await db2.get(userId).catch(err => {
 			console.log(err);
 		});
 		if (lookup1 === undefined) {
 			if (lookup2 === undefined) {
-				db1.set(scoresaber, user).then(() => {
-					db2.set(user, scoresaber).then(() => {
+				db1.set(scoresaber, userId).then(() => {
+					db2.set(userId, scoresaber).then(() => {
 						message.channel.send('Added user.');
 					}).catch(err => {
 						console.log(err);
