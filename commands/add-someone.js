@@ -34,10 +34,6 @@ module.exports = {
 		// If no user mentioned
 		if (!message.mentions.users.size) {
 			userId = args[1];
-			console.log(userId);
-			console.log(message.guild.members);
-			console.log(message.guild.members.hasOwnProperty(userId));
-			console.log(message.guild.members.hasOwnProperty('311273905094656001'));
 			try {
 				await message.guild.fetchMember(userId);
 			} catch(err) {
