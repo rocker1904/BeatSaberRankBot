@@ -70,21 +70,23 @@ module.exports = {
 			// Removes rank roles they shouldn't have
 			for (const [rankRoleName, rankRole] of Object.entries(rankRoles)) {
 				if (discordMember.roles.some(role => role === rankRole) && rankRole.name !== rankGroup) {
-					discordMember.removeRole(rankRole).then(() => {
+					try {
+						await discordMember.removeRole(rankRole);
 						console.log(`Removed role from ${discordMember.user.tag}: ${rankRoleName}`);
-					}).catch(err => {
+					} catch(err) {
 						console.log(err);
-					});
+					}
 				}
 			}
 
 			// Adds their current rank role if they don't already have it
 			if (!discordMember.roles.some(role => role.name === rankGroup) && rankGroup !== '') {
-				discordMember.addRole(rankRoles[rankGroup]).then(() => {
+				try {
+					await discordMember.addRole(rankRoles[rankGroup]);
 					console.log(`Added role to ${discordMember.user.tag}: ${rankRoles[rankGroup].name}`);
-				}).catch(err => {
+				} catch(err) {
 					console.log(err);
-				});
+				}
 			}
 		}
 	},
