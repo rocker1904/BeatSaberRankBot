@@ -4,7 +4,7 @@ const $ = require('cheerio');
 module.exports = {
 	async getPlayers() {
 		try {
-			const pagesToScrape = 10;
+			const pagesToScrape = 11;
 			const players = [];
 			for (let i = 0; i < pagesToScrape; i++) {
 				const url = 'https://scoresaber.com/global/' + (i + 1) + '&country=gb';

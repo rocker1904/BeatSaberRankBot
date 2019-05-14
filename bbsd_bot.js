@@ -1,8 +1,7 @@
-const autoUpdateInterval = 15 * 60 * 1000;
-
 const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, token, staff, serverId } = require('./config.json');
+const { prefix, token, staff, serverId, interval } = require('./config.json');
+const autoUpdateInterval = interval * 60 * 1000;
 const autoUpdateRoles = require('./roleUpdater').autoUpdateRoles;
 
 const client = new Discord.Client();

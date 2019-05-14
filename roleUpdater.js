@@ -10,10 +10,10 @@ module.exports = {
 		console.log('Running automatic role update.');
 		scraper.getPlayers().then(async players => {
 			await module.exports.updateRoles(players, BBSD);
+			console.log('Automatic role update complete.');
 		}).catch(err => {
 			console.log(err);
 		});
-		console.log('Automatic role update complete.');
 	},
 
 	async updateRoles(players, server) {
