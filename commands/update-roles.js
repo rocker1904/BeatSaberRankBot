@@ -1,8 +1,5 @@
 const scraper = require('../scraper.js');
 const updateRoles = require('../roleUpdater').updateRoles;
-const Keyv = require('keyv');
-const db1 = new Keyv('mongodb://localhost:27017/bsdb', { namespace: 'scoresaber' });
-db1.on('error', err => console.error('Keyv connection error:', err));
 require('events').EventEmitter.defaultMaxListeners = 100;
 
 module.exports = {
