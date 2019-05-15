@@ -1,8 +1,8 @@
 const rankGroups = require('./config.json').rankGroups;
-const databaseName = require('./config.json').databaseName;
+const database = require('./config.json').database;
 const scraper = require('./scraper.js');
 const Keyv = require('keyv');
-const db1 = new Keyv(`mongodb://localhost:27017/${databaseName}`, { namespace: 'scoresaber' });
+const db1 = new Keyv(`${database}`, { namespace: 'scoresaber' });
 db1.on('error', err => console.error('Keyv connection error:', err));
 require('events').EventEmitter.defaultMaxListeners = 100;
 

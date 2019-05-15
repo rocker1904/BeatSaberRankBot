@@ -1,8 +1,8 @@
-const databaseName = require('../config.json').databaseName;
+const database = require('../config.json').database;
 const Keyv = require('keyv');
-const db1 = new Keyv(`mongodb://localhost:27017/${databaseName}`, { namespace: 'scoresaber' });
+const db1 = new Keyv(`${database}`, { namespace: 'scoresaber' });
 db1.on('error', err => console.error('Keyv connection error:', err));
-const db2 = new Keyv(`mongodb://localhost:27017/${databaseName}`, { namespace: 'discord' });
+const db2 = new Keyv(`${database}`, { namespace: 'discord' });
 db2.on('error', err => console.error('Keyv connection error:', err));
 
 module.exports = {
