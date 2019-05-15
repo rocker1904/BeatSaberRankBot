@@ -1,3 +1,4 @@
+const scoresaberRegion = require('./config.json').scoresaberRegion;
 const rp = require('request-promise');
 const $ = require('cheerio');
 
@@ -7,7 +8,7 @@ module.exports = {
 			const pagesToScrape = 11;
 			const players = [];
 			for (let i = 0; i < pagesToScrape; i++) {
-				const url = 'https://scoresaber.com/global/' + (i + 1) + '&country=gb';
+				const url = 'https://scoresaber.com/global/' + (i + 1) + `&country=${scoresaberRegion}`;
 				await rp(url)
 					.then(html => {
 						const rows = $('tr', html);

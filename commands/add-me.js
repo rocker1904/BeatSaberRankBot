@@ -1,15 +1,18 @@
+const databaseName = require('../config.json').databaseName;
+const autoUpdateRoles = require('../roleUpdater').autoUpdateRoles;
 const Keyv = require('keyv');
-const db1 = new Keyv('mongodb://localhost:27017/bsdb', { namespace: 'scoresaber' });
+const db1 = new Keyv(`mongodb://localhost:27017/${databaseName}`, { namespace: 'scoresaber' });
 db1.on('error', err => console.error('Keyv connection error:', err));
-const db2 = new Keyv('mongodb://localhost:27017/bsdb', { namespace: 'discord' });
+const db2 = new Keyv(`mongodb://localhost:27017/${databaseName}`, { namespace: 'discord' });
 db2.on('error', err => console.error('Keyv connection error:', err));
 
 module.exports = {
 	name: 'add-me',
 	description: 'Adds the user and their scoresaber profile to the database.',
 	args: true,
+	guildOnly: true,
 	usage: '<scoresaber profile>',
-	async execute(message, args) {
+	async execute(message, args, updater, server) {
 
 		const userId = message.author.id;
 		let scoresaber = args[0];
@@ -29,7 +32,7 @@ module.exports = {
 			scoresaber = scoresaber.slice(0, endOfId);
 		}
 
-		// If neither the discord user or scoresaber profile is already in the database, add user
+		// If neither the discord user or Scoresaber profile is already in the database, add them
 		const lookup1 = await db1.get(scoresaber).catch(err => {
 			console.log(err);
 		});
@@ -41,6 +44,7 @@ module.exports = {
 				db1.set(scoresaber, userId).then(() => {
 					db2.set(userId, scoresaber).then(() => {
 						message.channel.send('Added user.');
+						autoUpdateRoles(server);
 					}).catch(err => {
 						console.log(err);
 					});

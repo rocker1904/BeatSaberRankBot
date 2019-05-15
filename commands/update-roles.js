@@ -8,14 +8,14 @@ module.exports = {
 	args: false,
 	guildOnly: true,
 	staffOnly: true,
-	async execute(message) {
+	async execute(message, args, updater, server) {
 		message.channel.send('Getting roles...');
 		console.log('Getting ranks...');
 		scraper.getPlayers().then(async players => {
 
 			console.log('Updating roles...');
 			message.channel.send('Updating roles...');
-			await updateRoles(players, message.guild);
+			await updateRoles(players, server);
 			console.log('Roles updated...');
 			message.channel.send('Roles updated.');
 

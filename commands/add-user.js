@@ -1,18 +1,19 @@
+const databaseName = require('../config.json').databaseName;
 const Keyv = require('keyv');
-const db1 = new Keyv('mongodb://localhost:27017/bsdb', { namespace: 'scoresaber' });
+const db1 = new Keyv(`mongodb://localhost:27017/${databaseName}`, { namespace: 'scoresaber' });
 db1.on('error', err => console.error('Keyv connection error:', err));
-const db2 = new Keyv('mongodb://localhost:27017/bsdb', { namespace: 'discord' });
+const db2 = new Keyv(`mongodb://localhost:27017/${databaseName}`, { namespace: 'discord' });
 db2.on('error', err => console.error('Keyv connection error:', err));
 
 module.exports = {
-	name: 'add-someone',
-	description: 'Adds the tagged user and their scoresaber profile to the database.',
+	name: 'add-user',
+	description: 'Adds the tagged user or user id and their scoresaber profile to the database.',
 	args: true,
-	usage: '<scoresaber profile> <user>',
+	usage: '<user> <scoresaber profile>',
 	staffOnly: true,
-	async execute(message, args) {
+	async execute(message, args, updater, server) {
 
-		let scoresaber = args[0];
+		let scoresaber = args[1];
 
 		// Reject command if arg doesn't contain /u/ and remove anything before it
 		const startOfId = scoresaber.indexOf('/u/');
@@ -33,9 +34,9 @@ module.exports = {
 
 		// If no user mentioned
 		if (!message.mentions.users.size) {
-			userId = args[1];
+			userId = args[0];
 			try {
-				await message.guild.fetchMember(userId);
+				await server.fetchMember(userId);
 			} catch(err) {
 				message.channel.send('Invalid user id.');
 				return;
@@ -46,7 +47,7 @@ module.exports = {
 			userId = message.mentions.users.first().id;
 		}
 
-		// If neither the discord user or scoresaber profile is already in the database, add user
+		// If neither the discord user or Scoresaber profile is already in the database, add them
 		const lookup1 = await db1.get(scoresaber).catch(err => {
 			console.log(err);
 		});

@@ -1,3 +1,3 @@
-# BBSD-BOT
+# Beat Saber Rank Bot
 
-The bot for the British Beat Saber Discord's automatic rank role updating.
+A bot for automatically updating roles on a discord server to the relevant rank roles

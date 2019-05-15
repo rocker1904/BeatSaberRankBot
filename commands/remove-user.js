@@ -1,16 +1,17 @@
+const databaseName = require('../config.json').databaseName;
 const Keyv = require('keyv');
-const db1 = new Keyv('mongodb://localhost:27017/bsdb', { namespace: 'scoresaber' });
+const db1 = new Keyv(`mongodb://localhost:27017/${databaseName}`, { namespace: 'scoresaber' });
 db1.on('error', err => console.error('Keyv connection error:', err));
-const db2 = new Keyv('mongodb://localhost:27017/bsdb', { namespace: 'discord' });
+const db2 = new Keyv(`mongodb://localhost:27017/${databaseName}`, { namespace: 'discord' });
 db2.on('error', err => console.error('Keyv connection error:', err));
 
 module.exports = {
-	name: 'remove-someone',
+	name: 'remove-user',
 	description: 'Removes the user or scoresaber profile from the database.',
 	args: true,
 	usage: '<scoresaber profile>/<user>',
 	staffOnly: true,
-	async execute(message, args) {
+	async execute(message, args, updater, server) {
 
 		// If no user mentioned
 		if (!message.mentions.users.size) {
@@ -24,7 +25,7 @@ module.exports = {
 				scoresaber = arg.slice(startOfId);
 			} else {
 				try {
-					await message.guild.fetchMember(arg);
+					await server.fetchMember(arg);
 				} catch(err) {
 					message.channel.send('Please use a valid scoresaber profile or user id.');
 					return;
@@ -32,7 +33,7 @@ module.exports = {
 				userId = arg;
 			}
 
-			// Checks if given scoresaber profile
+			// Checks if given Scoresaber profile
 			if (scoresaber !== undefined) {
 
 				// Remove any sorts (ie page or recent) from the string

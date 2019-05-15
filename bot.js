@@ -18,14 +18,14 @@ for (const file of commandFiles) {
 const cooldowns = new Discord.Collection();
 
 let updater;
-let BBSD;
+let server;
 
 client.once('ready', () => {
-	BBSD = client.guilds.get(serverId);
+	server = client.guilds.get(serverId);
 	// Wrapper for updater
 	updater = new class {
 		constructor() {
-			this.timeout = client.setInterval(() => { autoUpdateRoles(BBSD); }, autoUpdateInterval);
+			this.timeout = client.setInterval(() => { autoUpdateRoles(server); }, autoUpdateInterval);
 			this.stopped = false;
 			console.log('Updater started.');
 		}
@@ -37,7 +37,7 @@ client.once('ready', () => {
 		start() {
 			if (this.stopped === true) {
 				this.stopped = false;
-				this.timeout = client.setInterval(() => { autoUpdateRoles(BBSD); }, autoUpdateInterval);
+				this.timeout = client.setInterval(() => { autoUpdateRoles(server); }, autoUpdateInterval);
 				console.log('Updater started again.');
 			}
 		}
@@ -60,7 +60,11 @@ client.on('message', message => {
 	}
 
 	if (command.guildOnly && message.channel.type !== 'text') {
-		return message.reply('I can\'t execute that command inside DMs!');
+		return message.reply('I can only execute that command on the server.');
+	}
+
+	if (message.guild.id !== serverId) {
+		return message.reply('I can only execute that command on the server.');
 	}
 
 	if (command.args && !args.length) {
@@ -94,7 +98,7 @@ client.on('message', message => {
 	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
 	try {
-		command.execute(message, args, updater);
+		command.execute(message, args, updater, server, client);
 	} catch (error) {
 		console.error(error);
 		message.reply('there was an error trying to execute that command!');

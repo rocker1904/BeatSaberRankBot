@@ -1,8 +1,8 @@
 {
-  "name": "bbsd_bot",
+  "name": "rank_bot",
   "version": "1.0.0",
   "description": "",
-  "main": "bbsd_bot.js",
+  "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
