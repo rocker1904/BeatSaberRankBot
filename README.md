@@ -7,7 +7,7 @@ A bot for automatically updating roles on a discord server to the relevant rank 
 
 Create a database, this bot implements keyv so see the keyv documentation for more information: https://github.com/lukechilds/keyv#official-storage-adapters
 
-Create a config.json of the following form in the root directory:
+Create a config.json of the following form in the root directory but with the fields changed to match your server:
 
 ```JSON
 {
@@ -18,7 +18,12 @@ Create a config.json of the following form in the root directory:
 	"interval": 30,
 	"rankGroups": [["Top Regional Player", 1], ["Top 10", 10], ["Top 25", 25], ["Top 50", 50]],
 	"scoresaberRegion": "gb",
-	"database": "mongodb://user:pass@localhost:27017/dbname"
+	"database": "mongodb://user:pass@localhost:27017/dbname",
+	"roleMap": [["gb", "British"], ["", "Non UK"]],
+	"errorChannelId": "discord channel id",
+	"rankUpdateChannelId": "discord channel id",
+	"numPlayersToScrape": 550,
+	"customRegionName": ""
 }
 ```
 

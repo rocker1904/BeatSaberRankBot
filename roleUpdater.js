@@ -1,5 +1,9 @@
 const rankGroups = require('./config.json').rankGroups;
+const roleMap = require('./config.json').roleMap;
+const scoresaberRegion = require('./config.json').scoresaberRegion;
 const database = require('./config.json').database;
+const errorChannelId = require('./config.json').errorChannelId;
+const rankUpdateChannelId = require('./config.json').rankUpdateChannelId;
 const scraper = require('./scraper.js');
 const Keyv = require('keyv');
 const db1 = new Keyv(`${database}`, { namespace: 'scoresaber' });
@@ -8,20 +12,21 @@ require('events').EventEmitter.defaultMaxListeners = 100;
 
 module.exports = {
 
-	async autoUpdateRoles(server) {
+	async autoUpdateRoles(guild) {
 		console.log('Running automatic role update.');
-		scraper.getPlayers().then(async players => {
-			await module.exports.updateRoles(players, server);
-			console.log('Automatic role update complete.');
-		}).catch(err => {
+		const players = await scraper.getPlayers().catch(err => {
 			console.log(err);
 		});
+		module.exports.updateRoles(players, guild).then(() => {
+			console.log('Automatic role update complete.');
+		});
+		return players;
 	},
 
-	async updateRoles(players, server) {
+	async updateRoles(players, guild) {
 		// Create a dictionary of the rank groups and corresponding role objects
 		const rankRoles = {};
-		const guildRoles = server.roles;
+		const guildRoles = guild.roles;
 		for (const rolePair of guildRoles) {
 			const role = rolePair[1];
 			for (let p = 0; p < rankGroups.length; p++) {
@@ -43,10 +48,17 @@ module.exports = {
 			if (discordId === undefined) continue;
 
 			// Get their guildMemeber object
-			const discordMember = await server.fetchMember(discordId).catch(err => {
-				console.log(err);
+			const guildMember = await guild.fetchMember(discordId).catch(() => {
+
+				if (errorChannelId !== '' && errorChannelId !== undefined) {
+					const errorChannel = guild.channels.get(errorChannelId);
+					if (errorChannel !== undefined) {
+						errorChannel.send(`Could not find user <@${discordId}> with id ${discordId}`);
+					}
+				}
+				console.log(`Could not find user <@${discordId}> with id ${discordId}`);
 			});
-			if (discordMember === undefined) continue;
+			if (guildMember === undefined) continue;
 
 			// Work out which rank group they fall under
 			let rankGroup = '';
@@ -57,12 +69,18 @@ module.exports = {
 				}
 			}
 
+			let removedRole;
+			let removedRoleIndex;
+			let addedRole;
+			let addedRoleIndex;
+
 			// Removes rank roles they shouldn't have
 			for (const [rankRoleName, rankRole] of Object.entries(rankRoles)) {
-				if (discordMember.roles.some(role => role === rankRole) && rankRole.name !== rankGroup) {
+				if (guildMember.roles.some(role => role === rankRole) && rankRole.name !== rankGroup) {
 					try {
-						await discordMember.removeRole(rankRole);
-						console.log(`Removed role from ${discordMember.user.tag}: ${rankRoleName}`);
+						await guildMember.removeRole(rankRole);
+						removedRole = rankRole;
+						console.log(`Removed role from ${guildMember.user.tag}: ${rankRoleName}`);
 					} catch(err) {
 						console.log(err);
 					}
@@ -70,14 +88,143 @@ module.exports = {
 			}
 
 			// Adds their current rank role if they don't already have it
-			if (!discordMember.roles.some(role => role.name === rankGroup) && rankGroup !== '') {
+			if (!guildMember.roles.some(role => role.name === rankGroup) && rankGroup !== '') {
 				try {
-					await discordMember.addRole(rankRoles[rankGroup]);
-					console.log(`Added role to ${discordMember.user.tag}: ${rankRoles[rankGroup].name}`);
+					await guildMember.addRole(rankRoles[rankGroup]);
+					addedRole = rankRoles[rankGroup];
+					console.log(`Added role to ${guildMember.user.tag}: ${rankRoles[rankGroup].name}`);
+				} catch(err) {
+					console.log(err);
+				}
+			}
+
+			if (removedRole === undefined || addedRole === undefined) continue;
+
+			for (let p = 0; p < rankGroups.length; p++) {
+				if (rankGroups[p][0] === removedRole.name) {
+					removedRoleIndex = p;
+				}
+			}
+
+			for (let p = 0; p < rankGroups.length; p++) {
+				if (rankGroups[p][0] === addedRole.name) {
+					addedRoleIndex = p;
+				}
+			}
+
+			if (addedRoleIndex < removedRoleIndex) {
+				if (rankUpdateChannelId !== '' && rankUpdateChannelId !== undefined) {
+					const rankUpdateChannel = guild.channels.get(rankUpdateChannelId);
+					if (rankUpdateChannel !== undefined) {
+						rankUpdateChannel.send(`${guildMember.user.username} has advanced to ${addedRole.name}`);
+					}
+				}
+			}
+		}
+	},
+
+	async addRegionRole(scoresaber, guildMember) {
+		const region = await scraper.getRegion(scoresaber);
+		let i = -1;
+		for (let n = 0; n < roleMap.length; n++) {
+			if (roleMap[n][0] === region) {
+				i = n;
+			}
+		}
+		if (i === -1) {
+			i = roleMap.length - 1;
+		}
+		const regionalRoleName = roleMap[i][1];
+
+		// Adds their region role if they don't already have it
+		if (!guildMember.roles.some(role => role.name === regionalRoleName)) {
+			try {
+				let regionalRole;
+				const guildRoles = guildMember.guild.roles;
+				for (const rolePair of guildRoles) {
+					const role = rolePair[1];
+					if (role.name === regionalRoleName) {
+						regionalRole = role;
+					}
+				}
+
+				if (regionalRole == null) {
+					console.log(`Error adding role to ${guildMember.user.tag}: ${regionalRole.name}`);
+					return;
+				}
+
+				await guildMember.addRole(regionalRole);
+				console.log(`Added role to ${guildMember.user.tag}: ${regionalRole.name}`);
+
+			} catch(err) {
+				console.log(err);
+			}
+		}
+	},
+
+	async addRankRole(scoresaber, guildMember) {
+		// Check they're in the region
+		const region = await scraper.getRegion(scoresaber);
+		let i = -1;
+		for (let n = 0; n < roleMap.length; n++) {
+			if (roleMap[n][0] === region) {
+				i = n;
+			}
+		}
+		if (i === -1) return;
+
+		if (scoresaberRegion.length !== 2) {
+			module.exports.autoUpdateRoles(guildMember.guild);
+			return;
+		}
+
+		// Create a dictionary of the rank groups and corresponding role objects
+		const rankRoles = {};
+		const guildRoles = guildMember.guild.roles;
+		for (const rolePair of guildRoles) {
+			const role = rolePair[1];
+			for (let p = 0; p < rankGroups.length; p++) {
+				if (role.name === rankGroups[p][0]) {
+					rankRoles[rankGroups[p][0]] = role;
+				}
+			}
+		}
+
+		const playerData = await scraper.getPlayerData(scoresaber);
+		const rank = playerData[0];
+
+		// Work out which rank group they fall under
+		let rankGroup = '';
+		for (let n = 0; n < rankGroups.length; n++) {
+			if (rank <= rankGroups[n][1]) {
+				rankGroup = rankGroups[n][0];
+				break;
+			}
+		}
+
+		if (rankGroup === '') return;
+
+		// Removes rank roles they shouldn't have
+		for (const [rankRoleName, rankRole] of Object.entries(rankRoles)) {
+			if (guildMember.roles.some(role => role === rankRole) && rankRole.name !== rankGroup) {
+				try {
+					await guildMember.removeRole(rankRole);
+					console.log(`Removed role from ${guildMember.user.tag}: ${rankRoleName}`);
 				} catch(err) {
 					console.log(err);
 				}
 			}
 		}
+
+		// Adds their current rank role if they don't already have it
+		if (!guildMember.roles.some(role => role.name === rankGroup) && rankGroup !== '') {
+			try {
+				await guildMember.addRole(rankRoles[rankGroup]);
+				console.log(`Added role to ${guildMember.user.tag}: ${rankRoles[rankGroup].name}`);
+			} catch(err) {
+				console.log(err);
+			}
+		}
+
 	},
 };

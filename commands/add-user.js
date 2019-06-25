@@ -1,4 +1,6 @@
 const database = require('../config.json').database;
+const addRegionRole = require('../roleUpdater').addRegionRole;
+const addRankRole = require('../roleUpdater').addRankRole;
 const Keyv = require('keyv');
 const db1 = new Keyv(`${database}`, { namespace: 'scoresaber' });
 db1.on('error', err => console.error('Keyv connection error:', err));
@@ -15,7 +17,7 @@ module.exports = {
 
 		let scoresaber = args[1];
 
-		// Reject command if arg doesn't contain /u/ and remove anything before it
+		// Reject command if second arg doesn't contain /u/ and remove anything before it
 		const startOfId = scoresaber.indexOf('/u/');
 		if (startOfId !== -1) {
 			scoresaber = scoresaber.slice(startOfId);
@@ -59,6 +61,13 @@ module.exports = {
 				db1.set(scoresaber, userId).then(() => {
 					db2.set(userId, scoresaber).then(() => {
 						message.channel.send('Added user.');
+						// Get their guildMemeber object and use it to add region and rank roles
+						server.fetchMember(userId).then(guildMember => {
+							addRegionRole(scoresaber, guildMember);
+							addRankRole(scoresaber, guildMember);
+						}).catch(err => {
+							console.log(err);
+						});
 					}).catch(err => {
 						console.log(err);
 					});

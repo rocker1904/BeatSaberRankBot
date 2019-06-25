@@ -1,5 +1,7 @@
 const database = require('../config.json').database;
 const autoUpdateRoles = require('../roleUpdater').autoUpdateRoles;
+const addRegionRole = require('../roleUpdater').addRegionRole;
+const addRankRole = require('../roleUpdater').addRankRole;
 const Keyv = require('keyv');
 const db1 = new Keyv(`${database}`, { namespace: 'scoresaber' });
 db1.on('error', err => console.error('Keyv connection error:', err));
@@ -44,7 +46,13 @@ module.exports = {
 				db1.set(scoresaber, userId).then(() => {
 					db2.set(userId, scoresaber).then(() => {
 						message.channel.send('Added user.');
-						autoUpdateRoles(server);
+						// Get their guildMemeber object and use it to add region and rank roles
+						server.fetchMember(userId).then(guildMember => {
+							addRegionRole(scoresaber, guildMember);
+							addRankRole(scoresaber, guildMember);
+						}).catch(err => {
+							console.log(err);
+						});
 					}).catch(err => {
 						console.log(err);
 					});

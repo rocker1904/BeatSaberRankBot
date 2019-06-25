@@ -25,7 +25,7 @@ module.exports = {
 				scoresaber = arg.slice(startOfId);
 			} else {
 				try {
-					await server.fetchMember(arg);
+					await db2.get(arg);
 				} catch(err) {
 					message.channel.send('Please use a valid scoresaber profile or user id.');
 					return;

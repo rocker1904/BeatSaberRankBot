@@ -38,7 +38,7 @@ module.exports = {
 
 					if (user === undefined) message.channel.send('ERROR: fetchUser returned undefined');
 
-					message.channel.send(`${user.tag}`);
+					message.channel.send(`${user.tag} (id ${discordId})`);
 				} else {
 					message.channel.send('That profile isn\'t in the database.');
 				}

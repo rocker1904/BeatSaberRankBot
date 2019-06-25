@@ -20,12 +20,21 @@ const cooldowns = new Discord.Collection();
 let updater;
 let server;
 
+const regionalPlayers = [];
+
 client.once('ready', () => {
 	server = client.guilds.get(serverId);
 	// Wrapper for updater
 	updater = new class {
 		constructor() {
-			this.timeout = client.setInterval(() => { autoUpdateRoles(server); }, autoUpdateInterval);
+			this.timeout = client.setInterval(async () => {
+				autoUpdateRoles(server).then((newRegionalPlayers) => {
+					for (let i = 0; i < newRegionalPlayers.length; i++) {
+						regionalPlayers[i] = newRegionalPlayers[i];
+					}
+				});
+			}, autoUpdateInterval);
+
 			this.stopped = false;
 			console.log('Updater started.');
 		}
@@ -37,12 +46,23 @@ client.once('ready', () => {
 		start() {
 			if (this.stopped === true) {
 				this.stopped = false;
-				this.timeout = client.setInterval(() => { autoUpdateRoles(server); }, autoUpdateInterval);
+				this.timeout = client.setInterval(async () => {
+					autoUpdateRoles(server).then((newRegionalPlayers) => {
+						for (let i = 0; i < newRegionalPlayers.length; i++) {
+							regionalPlayers[i] = newRegionalPlayers[i];
+						}
+					});
+				}, autoUpdateInterval);
 				console.log('Updater started again.');
 			}
 		}
 	};
 	console.log('Ready!');
+	autoUpdateRoles(server).then((newRegionalPlayers) => {
+		for (let i = 0; i < newRegionalPlayers.length; i++) {
+			regionalPlayers[i] = newRegionalPlayers[i];
+		}
+	});
 });
 
 client.on('message', message => {
@@ -98,7 +118,7 @@ client.on('message', message => {
 	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
 	try {
-		command.execute(message, args, updater, server, client);
+		command.execute(message, args, updater, server, client, regionalPlayers);
 	} catch (error) {
 		console.error(error);
 		message.reply('there was an error trying to execute that command!');
