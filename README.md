@@ -17,6 +17,7 @@ Create a config.json of the following form in the root directory but with the fi
 	"serverId": "discord server id",
 	"interval": 30,
 	"rankGroups": [["Top Regional Player", 1], ["Top 10", 10], ["Top 25", 25], ["Top 50", 50]],
+	"globalRankGroups":[["Top 32 (global)", 32], ["Top 50 (global)", 50], ["Top 100 (global)", 100]],
 	"scoresaberRegion": "gb",
 	"database": "mongodb://user:pass@localhost:27017/dbname",
 	"roleMap": [["gb", "British"], ["", "Non UK"]],
