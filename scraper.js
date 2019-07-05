@@ -31,8 +31,34 @@ module.exports = {
 		}
 	},
 
-	async getRegion(player) {
-		const url = 'https://scoresaber.com' + player;
+	async getTopGlobalPlayers() {
+		try {
+			const pagesToScrape = 4;
+			const players = [];
+			for (let i = 0; i < pagesToScrape; i++) {
+				const url = 'https://scoresaber.com/global/' + (i + 1);
+				await rp(url)
+					.then(html => {
+						const rows = $('tr', html);
+						rows.each(function(n) {
+							if(n !== 0) {
+								players[50 * i + n - 1] = $('a', this).attr('href');
+							}
+						});
+					})
+					.catch(err => {
+						console.log(err);
+					});
+			}
+			return players;
+		} catch (e) {
+			console.log(e);
+			throw e;
+		}
+	},
+
+	async getRegion(scoresaber) {
+		const url = 'https://scoresaber.com' + scoresaber;
 		let region;
 		await rp(url)
 			.then(html => {
@@ -48,11 +74,13 @@ module.exports = {
 		return region;
 	},
 
-	async getPlayerData(player) {
-		const url = 'https://scoresaber.com' + player;
+	async getPlayerData(scoresaber) {
+		const url = 'https://scoresaber.com' + scoresaber;
 		let regionRank;
 		let region;
 		let globalRank;
+		let pp;
+		let name;
 		await rp(url)
 			.then(html => {
 				const ul = $('ul', html).slice(0, 1);
@@ -60,13 +88,58 @@ module.exports = {
 				const links = $('a', li);
 				const regionLink = links.slice(-1).attr('href');
 				region = regionLink.slice(-2);
+
 				const a = $('a', html);
-				globalRank = parseInt(a.slice(7, 8).text().slice(1));
+				globalRank = parseInt(a.slice(7, 8).text().slice(1).replace(',', ''));
 				regionRank = parseInt(a.slice(8, 9).text().slice(2));
+
+				pp = parseFloat($('li', ul).slice(1, 2).text().replace(',', '').replace('pp', '').replace(/\s/g, '').replace('PerformancePoints:', ''));
+
+				name = a.slice(6, 7).text().trim();
 			})
 			.catch(err => {
 				console.log(err);
 			});
-		return [regionRank, region, globalRank];
+		return [regionRank, region, globalRank, pp, name];
 	},
+
+	async getPlayerAtRank(rank, region = false) {
+		let pageToScrape = Math.ceil(rank / 50);
+		if (rank % 50 === 0) {
+			pagesToScrape = Math.ceil((rank - 1) / 50);
+		}
+		let player;
+		let url;
+		if (!region) {
+			url = 'https://scoresaber.com/global/' + (pageToScrape);
+		} else {
+			url = 'https://scoresaber.com/global/' + (pageToScrape) + `&country=${region}`;
+		}
+		await rp(url)
+			.then(html => {
+				const rows = $('tr', html);
+
+				let playerRowNum;
+				if (rank % 50 === 0) {
+					playerRowNum = 50;
+				} else {
+					playerRowNum = rank % 50;
+				}
+
+				if (rows.length - 1 < playerRowNum) {
+					player = false;
+					return;
+				}
+
+				rows.each(function(n) {
+					if(n === playerRowNum) {
+						player = $('a', this).attr('href');
+					}
+				});
+			})
+			.catch(err => {
+				console.log(err);
+			});
+		return player;
+	}
 };
