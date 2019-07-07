@@ -20,7 +20,7 @@ module.exports = {
 			return;
 		}
 
-        scoresaberId = scoresaber.replace('/u/', '');
+		scoresaberId = scoresaber.replace('/u/', '');
 
 		message.channel.send(`Your ScoreSaber ID is: ${scoresaberId}`);
 	},

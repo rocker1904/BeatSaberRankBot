@@ -20,6 +20,6 @@ module.exports = {
 			return;
 		}
 
-        message.channel.send(`Your ScoreSaber profile: https://scoresaber.com${scoresaber}`);
+		message.channel.send(`Your ScoreSaber profile: https://scoresaber.com${scoresaber}`);
 	},
 };
