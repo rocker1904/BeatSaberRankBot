@@ -32,6 +32,10 @@ module.exports = {
 			scoresaber = scoresaber.slice(0, endOfId);
 		}
 
+		// Idiot filter
+		// eslint-disable-next-line no-useless-escape
+		scoresaber = scoresaber.replace(/[^a-z0-9\/:.-]/gi, '');
+
 		let userId;
 
 		// If no user mentioned

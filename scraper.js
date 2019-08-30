@@ -84,16 +84,31 @@ module.exports = {
 		await rp(url)
 			.then(html => {
 				const ul = $('ul', html).slice(0, 1);
-				const li = $('li', ul).slice(0, 1);
-				const links = $('a', li);
+
+				const lis = $('li', ul);
+				let rankingLi;
+				for (let i = 0; i < lis.length; i++) {
+					rankingLi = lis.slice(i, i + 1);
+					const strong = $('strong', rankingLi).slice(0, 1);
+					if (strong.text() === 'Player Ranking:') break;
+				}
+
+				const links = $('a', rankingLi);
 				const regionLink = links.slice(-1).attr('href');
 				region = regionLink.slice(-2);
 
 				const a = $('a', html);
 				globalRank = parseInt(a.slice(7, 8).text().slice(1).replace(',', ''));
-				regionRank = parseInt(a.slice(8, 9).text().slice(2));
+				regionRank = parseInt(a.slice(8, 9).text().slice(2).replace(',', ''));
 
-				pp = parseFloat($('li', ul).slice(1, 2).text().replace(',', '').replace('pp', '').replace(/\s/g, '').replace('PerformancePoints:', ''));
+				let ppLi;
+				for (let i = 0; i < lis.length; i++) {
+					ppLi = lis.slice(i, i + 1);
+					const strong = $('strong', ppLi).slice(0, 1);
+					if (strong.text() === 'Performance Points:') break;
+				}
+
+				pp = parseFloat(ppLi.text().replace(',', '').replace('pp', '').replace(/\s/g, '').replace('PerformancePoints:', ''));
 
 				name = a.slice(6, 7).text().trim();
 			})
@@ -106,7 +121,7 @@ module.exports = {
 	async getPlayerAtRank(rank, region = false) {
 		let pageToScrape = Math.ceil(rank / 50);
 		if (rank % 50 === 0) {
-			pagesToScrape = Math.ceil((rank - 1) / 50);
+			pageToScrape = Math.ceil((rank - 1) / 50);
 		}
 		let player;
 		let url;

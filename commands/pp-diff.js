@@ -41,11 +41,11 @@ module.exports = {
 			// If only a number
 			if (arg.replace(/[0-9]/g, '').length === 0) {
 				targetUserScoresaber = await scraper.getPlayerAtRank(parseInt(arg, 10));
-			
+
 			// If two letters in argument
 			} else if (arg.replace(/[0-9]/g, '').length === 2) {
 				const region = arg.replace(/[0-9]/g, '');
-				regionIndex = arg.indexOf(region);
+				const regionIndex = arg.indexOf(region);
 				// Check if both characters are together
 				if (regionIndex === -1) {
 					message.channel.send('Please give a ScoreSaber profile or rank');
@@ -72,7 +72,7 @@ module.exports = {
 
 		if (targetUserScoresaber === commandUserScoresaber) {
 			// PUT HEAD EMOTE IN HERE
-			message.channel.send(`You have the same PP as yourself.`);
+			message.channel.send('You have the same PP as yourself.');
 			return;
 		}
 
@@ -80,7 +80,7 @@ module.exports = {
 		const targetUserPP = targetUserData[3];
 		const targetUserName = targetUserData[4];
 
-		PPDiff = Math.abs(targetUserPP - commandUserPP).toFixed(2);
+		const PPDiff = Math.abs(targetUserPP - commandUserPP).toFixed(2);
 
 		if (targetUserPP > commandUserPP) {
 			message.channel.send(`${targetUserName} has ${PPDiff} more PP than you.`);

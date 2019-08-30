@@ -1,5 +1,4 @@
 const database = require('../config.json').database;
-const autoUpdateRoles = require('../roleUpdater').autoUpdateRoles;
 const addRegionRole = require('../roleUpdater').addRegionRole;
 const addRankRole = require('../roleUpdater').addRankRole;
 const Keyv = require('keyv');
@@ -33,6 +32,10 @@ module.exports = {
 		if (endOfId !== -1) {
 			scoresaber = scoresaber.slice(0, endOfId);
 		}
+
+		// Idiot filter
+		// eslint-disable-next-line no-useless-escape
+		scoresaber = scoresaber.replace(/[^a-z0-9\/:.-]/gi, '');
 
 		// If neither the discord user or Scoresaber profile is already in the database, add them
 		const lookup1 = await db1.get(scoresaber).catch(err => {

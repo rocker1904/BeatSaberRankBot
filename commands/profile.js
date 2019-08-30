@@ -1,4 +1,3 @@
-const scraper = require('../scraper.js');
 const database = require('../config.json').database;
 const Keyv = require('keyv');
 const db2 = new Keyv(`${database}`, { namespace: 'discord' });
