@@ -98,8 +98,8 @@ module.exports = {
 				region = regionLink.slice(-2);
 
 				const a = $('a', html);
-				globalRank = parseInt(a.slice(7, 8).text().slice(1).replace(',', ''));
-				regionRank = parseInt(a.slice(8, 9).text().slice(2).replace(',', ''));
+				globalRank = parseInt(a.slice(9, 10).text().slice(1).replace(',', ''));
+				regionRank = parseInt(a.slice(10, 11).text().slice(2).replace(',', ''));
 
 				let ppLi;
 				for (let i = 0; i < lis.length; i++) {
@@ -110,7 +110,7 @@ module.exports = {
 
 				pp = parseFloat(ppLi.text().replace(',', '').replace('pp', '').replace(/\s/g, '').replace('PerformancePoints:', ''));
 
-				name = a.slice(6, 7).text().trim();
+				name = a.slice(8, 9).text().trim();
 			})
 			.catch(err => {
 				console.log(err);
@@ -156,5 +156,5 @@ module.exports = {
 				console.log(err);
 			});
 		return player;
-	}
+	},
 };
