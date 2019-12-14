@@ -34,8 +34,7 @@ module.exports = {
 		}
 
 		// Idiot filter
-		// eslint-disable-next-line no-useless-escape
-		scoresaber = scoresaber.replace(/[^a-z0-9\/:.-]/gi, '');
+		scoresaber = scoresaber.replace(/[^a-z0-9/:.]/gi, '');
 
 		// If neither the discord user or Scoresaber profile is already in the database, add them
 		const lookup1 = await db1.get(scoresaber).catch(err => {

@@ -11,7 +11,7 @@ module.exports = {
 	args: true,
 	usage: '<scoresaber profile>/<user>',
 	staffOnly: true,
-	async execute(message, args, updater, server) {
+	async execute(message, args) {
 
 		// If no user mentioned
 		if (!message.mentions.users.size) {
