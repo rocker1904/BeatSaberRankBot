@@ -83,34 +83,22 @@ module.exports = {
 		let name;
 		await rp(url)
 			.then(html => {
-				const ul = $('ul', html).slice(0, 1);
+				const ul = $(".columns .column:not(.is-narrow) ul", html)[0];
 
-				const lis = $('li', ul);
-				let rankingLi;
-				for (let i = 0; i < lis.length; i++) {
-					rankingLi = lis.slice(i, i + 1);
-					const strong = $('strong', rankingLi).slice(0, 1);
-					if (strong.text() === 'Player Ranking:') break;
-				}
-
+				const rankingLi = $(`strong:contains("Player Ranking:")`, ul).parent().slice(0, 1);
 				const links = $('a', rankingLi);
+
 				const regionLink = links.slice(-1).attr('href');
 				region = regionLink.slice(-2);
 
-				const a = $('a', html);
-				globalRank = parseInt(a.slice(9, 10).text().slice(1).replace(',', ''));
-				regionRank = parseInt(a.slice(10, 11).text().slice(2).replace(',', ''));
+				const rankingAnchors = $("li:first-child a", ul);
+				globalRank = Number(rankingAnchors.slice(0, 1).text().slice(1).replace(',', ''));
+				regionRank = Number(rankingAnchors.slice(1, 2).text().slice(2).replace(',', ''));
 
-				let ppLi;
-				for (let i = 0; i < lis.length; i++) {
-					ppLi = lis.slice(i, i + 1);
-					const strong = $('strong', ppLi).slice(0, 1);
-					if (strong.text() === 'Performance Points:') break;
-				}
+				const ppLi = $(`strong:contains("Performance Points:")`, ul).parent().slice(0, 1);
 
-				pp = parseFloat(ppLi.text().replace(',', '').replace('pp', '').replace(/\s/g, '').replace('PerformancePoints:', ''));
-
-				name = a.slice(8, 9).text().trim();
+				pp = Number(ppLi.text().replace('pp', '').replace(/\s/g, '').replace('PerformancePoints:', '').replace(",", ""));
+				name = $('.title.is-5 a', html).text().trim();
 			})
 			.catch(err => {
 				console.log(err);
