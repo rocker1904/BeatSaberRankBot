@@ -83,21 +83,21 @@ module.exports = {
 		let name;
 		await rp(url)
 			.then(html => {
-				const ul = $(".columns .column:not(.is-narrow) ul", html)[0];
+				const ul = $('.columns .column:not(.is-narrow) ul', html)[0];
 
-				const rankingLi = $(`strong:contains("Player Ranking:")`, ul).parent().slice(0, 1);
+				const rankingLi = $('strong:contains("Player Ranking:")', ul).parent().slice(0, 1);
 				const links = $('a', rankingLi);
 
 				const regionLink = links.slice(-1).attr('href');
 				region = regionLink.slice(-2);
 
-				const rankingAnchors = $("li:first-child a", ul);
+				const rankingAnchors = $('li:first-child a', ul);
 				globalRank = Number(rankingAnchors.slice(0, 1).text().slice(1).replace(',', ''));
 				regionRank = Number(rankingAnchors.slice(1, 2).text().slice(2).replace(',', ''));
 
-				const ppLi = $(`strong:contains("Performance Points:")`, ul).parent().slice(0, 1);
+				const ppLi = $('strong:contains("Performance Points:")', ul).parent().slice(0, 1);
 
-				pp = Number(ppLi.text().replace('pp', '').replace(/\s/g, '').replace('PerformancePoints:', '').replace(",", ""));
+				pp = Number(ppLi.text().replace('pp', '').replace(/\s/g, '').replace('PerformancePoints:', '').replace(',', ''));
 				name = $('.title.is-5 a', html).text().trim();
 			})
 			.catch(err => {
