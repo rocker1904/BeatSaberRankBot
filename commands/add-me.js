@@ -36,6 +36,11 @@ module.exports = {
 		// Idiot filter
 		scoresaber = scoresaber.replace(/[^a-z0-9/:.]/gi, '');
 
+		// Make sure the last charater isn't a slash
+		if (scoresaber.slice(-1) == '/') {
+			scoresaber = scoresaber.slice(0, -1);
+		}
+
 		// If neither the discord user or Scoresaber profile is already in the database, add them
 		const lookup1 = await db1.get(scoresaber).catch(err => {
 			console.log(err);
