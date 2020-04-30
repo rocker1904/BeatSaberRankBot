@@ -1,7 +1,14 @@
 const scoresaberRegion = require('./config.json').scoresaberRegion;
 const numPlayersToScrape = require('./config.json').numPlayersToScrape;
+const globalPagesToScrape = require('./config.json').globalPagesToScrape;
 const rp = require('request-promise');
 const $ = require('cheerio');
+
+const headers = {
+	'user-agent': `${scoresaberRegion.toUpperCase()} Regional Discord Bot`,
+	'X-Requested-With': 'XMLHttpRequest',
+};
+const proxy = 'https://cors-anywhere.herokuapp.com/';
 
 module.exports = {
 
@@ -10,8 +17,11 @@ module.exports = {
 			const pagesToScrape = Math.ceil(numPlayersToScrape / 50);
 			const players = [];
 			for (let i = 0; i < pagesToScrape; i++) {
-				const url = 'https://scoresaber.com/global/' + (i + 1) + `&country=${scoresaberRegion}`;
-				await rp(url)
+				const options = {
+					uri: proxy + 'https://scoresaber.com/global/' + (i + 1) + `&country=${scoresaberRegion}`,
+					headers: headers,
+				};
+				await rp(options)
 					.then(html => {
 						const rows = $('tr', html);
 						rows.each(function(n) {
@@ -33,11 +43,14 @@ module.exports = {
 
 	async getTopGlobalPlayers() {
 		try {
-			const pagesToScrape = 4;
+			const pagesToScrape = globalPagesToScrape;
 			const players = [];
 			for (let i = 0; i < pagesToScrape; i++) {
-				const url = 'https://scoresaber.com/global/' + (i + 1);
-				await rp(url)
+				const options = {
+					uri: proxy + 'https://scoresaber.com/global/' + (i + 1),
+					headers: headers,
+				};
+				await rp(options)
 					.then(html => {
 						const rows = $('tr', html);
 						rows.each(function(n) {
@@ -58,9 +71,12 @@ module.exports = {
 	},
 
 	async getRegion(scoresaber) {
-		const url = 'https://scoresaber.com' + scoresaber;
 		let region;
-		await rp(url)
+		const options = {
+			uri: proxy + 'https://scoresaber.com' + scoresaber,
+			headers: headers,
+		};
+		await rp(options)
 			.then(html => {
 				const ul = $('ul', html).slice(0, 1);
 				const li = $('li', ul).slice(0, 1);
@@ -75,13 +91,16 @@ module.exports = {
 	},
 
 	async getPlayerData(scoresaber) {
-		const url = 'https://scoresaber.com' + scoresaber;
 		let regionRank;
 		let region;
 		let globalRank;
 		let pp;
 		let name;
-		await rp(url)
+		const options = {
+			uri: proxy + 'https://scoresaber.com' + scoresaber,
+			headers: headers,
+		};
+		await rp(options)
 			.then(html => {
 				const ul = $('.columns .column:not(.is-narrow) ul', html)[0];
 
@@ -118,7 +137,11 @@ module.exports = {
 		} else {
 			url = 'https://scoresaber.com/global/' + (pageToScrape) + `&country=${region}`;
 		}
-		await rp(url)
+		const options = {
+			uri: proxy + url,
+			headers: headers,
+		};
+		await rp(options)
 			.then(html => {
 				const rows = $('tr', html);
 
