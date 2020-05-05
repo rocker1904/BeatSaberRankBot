@@ -6,9 +6,7 @@ const $ = require('cheerio');
 
 const headers = {
 	'user-agent': `${scoresaberRegion.toUpperCase()} Regional Discord Bot`,
-	'X-Requested-With': 'XMLHttpRequest',
 };
-const proxy = 'https://cors-anywhere.herokuapp.com/';
 
 module.exports = {
 
@@ -18,7 +16,7 @@ module.exports = {
 			const players = [];
 			for (let i = 0; i < pagesToScrape; i++) {
 				const options = {
-					uri: proxy + 'https://scoresaber.com/global/' + (i + 1) + `&country=${scoresaberRegion}`,
+					uri: 'https://scoresaber.com/global/' + (i + 1) + `&country=${scoresaberRegion}`,
 					headers: headers,
 				};
 				await rp(options)
@@ -47,7 +45,7 @@ module.exports = {
 			const players = [];
 			for (let i = 0; i < pagesToScrape; i++) {
 				const options = {
-					uri: proxy + 'https://scoresaber.com/global/' + (i + 1),
+					uri: 'https://scoresaber.com/global/' + (i + 1),
 					headers: headers,
 				};
 				await rp(options)
@@ -73,7 +71,7 @@ module.exports = {
 	async getRegion(scoresaber) {
 		let region;
 		const options = {
-			uri: proxy + 'https://scoresaber.com' + scoresaber,
+			uri: 'https://scoresaber.com' + scoresaber,
 			headers: headers,
 		};
 		await rp(options)
@@ -97,7 +95,7 @@ module.exports = {
 		let pp;
 		let name;
 		const options = {
-			uri: proxy + 'https://scoresaber.com' + scoresaber,
+			uri: 'https://scoresaber.com' + scoresaber,
 			headers: headers,
 		};
 		await rp(options)
@@ -138,7 +136,7 @@ module.exports = {
 			url = 'https://scoresaber.com/global/' + (pageToScrape) + `&country=${region}`;
 		}
 		const options = {
-			uri: proxy + url,
+			uri: url,
 			headers: headers,
 		};
 		await rp(options)
