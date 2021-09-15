@@ -38,8 +38,9 @@ module.exports = {
 				targetUserScoresaber = targetUserScoresaber.slice(0, endOfId);
 			}
 		} else {
-			if (arg.match(/^ *?([0-9]+)([a-z]{2})? *?$/i) !== null) {
-				const [, rank, region] = arg.match(/^ *?([0-9]+)([a-z]{2})? *?$/i) ?? [];
+			const parsedArgument = arg.match(/^ *?([0-9]+)([a-z]{2})? *?$/i);
+			if (parsedArgument) {
+				const [, rank, region] = parsedArgument;
 				targetUserScoresaber = await scraper.getPlayerAtRank(parseInt(rank, 10), region);
 			} else {
 				message.channel.send('Please give a ScoreSaber profile or rank');
