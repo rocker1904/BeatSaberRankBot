@@ -23,7 +23,7 @@ let server;
 const regionalPlayers = [];
 
 client.once('ready', () => {
-	server = client.guilds.get(serverId);
+	server = client.guilds.cache.get(serverId);
 	// Wrapper for updater
 	updater = new class {
 		constructor() {

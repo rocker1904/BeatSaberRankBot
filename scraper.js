@@ -16,7 +16,7 @@ module.exports = {
 			const players = [];
 			for (let i = 0; i < pagesToScrape; i++) {
 				const options = {
-					uri: 'https://scoresaber.com/global/' + (i + 1) + `&country=${scoresaberRegion}`,
+					uri: 'https://old.scoresaber.com/global/' + (i + 1) + `&country=${scoresaberRegion}`,
 					headers: headers,
 				};
 				await rp(options)
@@ -45,7 +45,7 @@ module.exports = {
 			const players = [];
 			for (let i = 0; i < pagesToScrape; i++) {
 				const options = {
-					uri: 'https://scoresaber.com/global/' + (i + 1),
+					uri: 'https://old.scoresaber.com/global/' + (i + 1),
 					headers: headers,
 				};
 				await rp(options)
@@ -71,7 +71,7 @@ module.exports = {
 	async getRegion(scoresaber) {
 		let region;
 		const options = {
-			uri: 'https://scoresaber.com' + scoresaber,
+			uri: 'https://old.scoresaber.com' + scoresaber,
 			headers: headers,
 		};
 		await rp(options)
@@ -95,7 +95,7 @@ module.exports = {
 		let pp;
 		let name;
 		const options = {
-			uri: 'https://scoresaber.com' + scoresaber,
+			uri: 'https://old.scoresaber.com' + scoresaber,
 			headers: headers,
 		};
 		await rp(options)
@@ -131,9 +131,9 @@ module.exports = {
 		let player;
 		let url;
 		if (!region) {
-			url = 'https://scoresaber.com/global/' + (pageToScrape);
+			url = 'https://old.scoresaber.com/global/' + (pageToScrape);
 		} else {
-			url = 'https://scoresaber.com/global/' + (pageToScrape) + `&country=${region}`;
+			url = 'https://old.scoresaber.com/global/' + (pageToScrape) + `&country=${region}`;
 		}
 		const options = {
 			uri: url,

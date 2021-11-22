@@ -34,9 +34,9 @@ module.exports = {
 					console.log(err);
 				});
 				if (discordId !== undefined) {
-					const user = await client.fetchUser(discordId);
+					const user = await client.users.fetch(discordId);
 
-					if (user === undefined) message.channel.send('ERROR: fetchUser returned undefined');
+					if (user === undefined) message.channel.send('ERROR: user fetch returned undefined');
 
 					message.channel.send(`${user.tag} (id ${discordId})`);
 				} else {
@@ -48,7 +48,7 @@ module.exports = {
 				let userId;
 				// Check if given user id
 				try {
-					await client.fetchUser(arg);
+					await client.users.fetch(arg);
 					userId = arg;
 				} catch(err) {
 					message.channel.send('Please use a valid scoresaber profile or user id.');
@@ -66,7 +66,7 @@ module.exports = {
 				});
 
 				if (scoresaber !== undefined) {
-					message.channel.send(`https://scoresaber.com${scoresaber}`);
+					message.channel.send(`https://old.scoresaber.com${scoresaber}`);
 				} else {
 					message.channel.send('That user isn\'t in the database.');
 				}
@@ -82,7 +82,7 @@ module.exports = {
 			});
 
 			if (scoresaber !== undefined) {
-				message.channel.send(`https://scoresaber.com${scoresaber}`);
+				message.channel.send(`https://old.scoresaber.com${scoresaber}`);
 			} else {
 				message.channel.send('That user isn\'t in the database.');
 			}

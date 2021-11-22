@@ -46,7 +46,7 @@ module.exports = {
 		if (!message.mentions.users.size) {
 			userId = args[0];
 			try {
-				await server.fetchMember(userId);
+				await server.members.fetch(userId);
 			} catch(err) {
 				message.channel.send('Invalid user id.');
 				return;
@@ -70,7 +70,7 @@ module.exports = {
 					db2.set(userId, scoresaber).then(() => {
 						message.channel.send('Added user.');
 						// Get their guildMemeber object and use it to add region and rank roles
-						server.fetchMember(userId).then(guildMember => {
+						server.members.fetch(userId).then(guildMember => {
 							addRegionRole(scoresaber, guildMember);
 							addRankRole(scoresaber, guildMember);
 						}).catch(err => {
