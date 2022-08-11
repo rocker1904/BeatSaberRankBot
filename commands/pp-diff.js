@@ -38,27 +38,10 @@ module.exports = {
 				targetUserScoresaber = targetUserScoresaber.slice(0, endOfId);
 			}
 		} else {
-			// If only a number
-			if (arg.replace(/[0-9]/g, '').length === 0) {
-				targetUserScoresaber = await scraper.getPlayerAtRank(parseInt(arg, 10));
-
-			// If two letters in argument
-			} else if (arg.replace(/[0-9]/g, '').length === 2) {
-				const region = arg.replace(/[0-9]/g, '');
-				const regionIndex = arg.indexOf(region);
-				// Check if both characters are together
-				if (regionIndex === -1) {
-					message.channel.send('Please give a ScoreSaber profile or rank');
-					return;
-				}
-				// Check if characters have no following numbers
-				if (arg.slice(regionIndex).length !== 2) {
-					message.channel.send('Please give a ScoreSaber profile or rank');
-					return;
-				}
-				const rank = parseInt(arg.replace(/\D/g, ''));
-				targetUserScoresaber = await scraper.getPlayerAtRank(rank, region);
-
+			const parsedArgument = arg.match(/^ *?([0-9]+)([a-z]{2})? *?$/i);
+			if (parsedArgument) {
+				const [, rank, region] = parsedArgument;
+				targetUserScoresaber = await scraper.getPlayerAtRank(parseInt(rank, 10), region);
 			} else {
 				message.channel.send('Please give a ScoreSaber profile or rank');
 				return;
